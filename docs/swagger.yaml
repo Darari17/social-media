@@ -1,0 +1,768 @@
+definitions:
+  dtos.CommentRequest:
+    properties:
+      content:
+        type: string
+    required:
+    - content
+    type: object
+  dtos.CommentUpdateRequest:
+    properties:
+      content:
+        type: string
+    required:
+    - content
+    type: object
+  dtos.PostResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dtos.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  dtos.UserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dtos.UserResponse:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dtos.UserTokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      postID:
+        type: integer
+      updatedAt:
+        type: string
+      userID:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Social Media
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with email and password
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dtos.UserTokenResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      summary: Login user
+      tags:
+      - Auth
+  /auth/logout:
+    get:
+      description: Logout by invalidating JWT
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Logout user
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register with email and password
+      parameters:
+      - description: Register request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      summary: Register user
+      tags:
+      - Auth
+  /follow/{id}:
+    delete:
+      description: Unfollow another user by ID
+      parameters:
+      - description: User ID to unfollow
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Unfollow user
+      tags:
+      - Follow
+    post:
+      description: Follow another user by ID
+      parameters:
+      - description: User ID to follow
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Follow user
+      tags:
+      - Follow
+  /posts:
+    get:
+      description: Get list of all posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dtos.PostResponse'
+                  type: array
+              type: object
+      summary: Get all posts
+      tags:
+      - Posts
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create a new post
+      parameters:
+      - description: Post content
+        in: formData
+        name: content
+        type: string
+      - description: Post image
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dtos.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Create post
+      tags:
+      - Posts
+  /posts/{id}/comments:
+    get:
+      description: Get all comments for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Comment'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Get comments by post ID
+      tags:
+      - Comments
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment on a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Post comment
+      tags:
+      - Comments
+  /posts/{id}/like:
+    post:
+      description: Like a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Like post
+      tags:
+      - Likes
+  /posts/{id}/likes:
+    get:
+      description: Get list of users who liked a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Get likes
+      tags:
+      - Likes
+  /posts/{id}/unlike:
+    post:
+      description: Unlike a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Unlike post
+      tags:
+      - Likes
+  /posts/{postId}:
+    delete:
+      description: Delete a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete post
+      tags:
+      - Posts
+    get:
+      description: Get a single post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dtos.PostResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      summary: Get post by ID
+      tags:
+      - Posts
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Update a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      - description: Post content
+        in: formData
+        name: content
+        type: string
+      - description: Post image
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dtos.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Update post
+      tags:
+      - Posts
+  /posts/comments/{id}:
+    delete:
+      description: Delete a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete comment
+      tags:
+      - Comments
+    put:
+      consumes:
+      - application/json
+      description: Update a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment update body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CommentUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Update comment
+      tags:
+      - Comments
+  /users:
+    get:
+      description: Get list of all registered users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - Users
+  /users/{id}/followers:
+    get:
+      description: Get list of followers for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      summary: Get followers
+      tags:
+      - Follow
+  /users/{id}/following:
+    get:
+      description: Get list of users that a user is following
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      summary: Get following
+      tags:
+      - Follow
+  /users/profile:
+    get:
+      description: Get authenticated user's profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dtos.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dtos.UserResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Get profile
+      tags:
+      - Users
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Update authenticated user's profile (name, avatar, bio)
+      parameters:
+      - description: Name
+        in: formData
+        name: name
+        type: string
+      - description: Avatar image
+        in: formData
+        name: avatar
+        type: file
+      - description: Bio
+        in: formData
+        name: bio
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.Response'
+      security:
+      - BearerAuth: []
+      summary: Update profile
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: RESTful API created using gin for Backend Social media
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
