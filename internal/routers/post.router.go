@@ -10,7 +10,7 @@ import (
 )
 
 func InitPostRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
-	postRepo := repos.NewPostRepo(db)
+	postRepo := repos.NewPostRepo(db, rdb)
 	postHandler := handlers.NewPostHandler(postRepo)
 
 	posts := router.Group("/posts")

@@ -11,7 +11,7 @@ import (
 
 func InitCommentRouter(r *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	commentRepo := repos.NewCommentRepo(db)
-	postRepo := repos.NewPostRepo(db)
+	postRepo := repos.NewPostRepo(db, rdb)
 	commentHandler := handlers.NewCommentHandler(commentRepo, postRepo)
 
 	post := r.Group("/posts")

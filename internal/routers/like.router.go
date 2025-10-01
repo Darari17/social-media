@@ -11,7 +11,7 @@ import (
 
 func InitLikeRoutes(r *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	likeRepo := repos.NewLikeRepo(db)
-	postRepo := repos.NewPostRepo(db)
+	postRepo := repos.NewPostRepo(db, rdb)
 
 	likeHandler := handlers.NewLikeHandler(likeRepo, postRepo)
 

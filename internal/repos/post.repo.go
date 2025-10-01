@@ -4,18 +4,25 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Darari17/social-media/internal/dtos"
 	"github.com/Darari17/social-media/internal/models"
+	"github.com/Darari17/social-media/internal/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type PostRepo struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
-func NewPostRepo(db *pgxpool.Pool) *PostRepo {
-	return &PostRepo{db: db}
+func NewPostRepo(db *pgxpool.Pool, rdb *redis.Client) *PostRepo {
+	return &PostRepo{
+		db:  db,
+		rdb: rdb,
+	}
 }
 
 func (pr *PostRepo) CreatePost(c context.Context, post *models.Post) error {
@@ -26,18 +33,28 @@ func (pr *PostRepo) CreatePost(c context.Context, post *models.Post) error {
 }
 
 func (pr *PostRepo) GetAllPosts(c context.Context) ([]dtos.PostResponse, error) {
+	const redisKey = "posts:all"
+
+	var posts []dtos.PostResponse
+
+	found, err := utils.GetRedis(c, pr.rdb, redisKey, &posts)
+	if err != nil {
+		return nil, err
+	}
+	if found {
+		return posts, nil
+	}
+
 	query := `SELECT id, user_id, content_text, content_image, created_at, updated_at, deleted_at 
 	          FROM posts 
 	          WHERE deleted_at IS NULL
-	          ORDER BY COALESCE(updated_at, created_at) DESC
-`
+	          ORDER BY COALESCE(updated_at, created_at) DESC`
 	rows, err := pr.db.Query(c, query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var posts []dtos.PostResponse
 	for rows.Next() {
 		var p dtos.PostResponse
 		if err := rows.Scan(&p.ID, &p.UserID, &p.Content, &p.Image, &p.CreatedAt, &p.UpdatedAt, &p.DeletedAt); err != nil {
@@ -45,6 +62,11 @@ func (pr *PostRepo) GetAllPosts(c context.Context) ([]dtos.PostResponse, error) 
 		}
 		posts = append(posts, p)
 	}
+
+	if err := utils.SetRedis(c, pr.rdb, redisKey, posts, time.Minute); err != nil {
+		return posts, nil
+	}
+
 	return posts, nil
 }
 
