@@ -1,0 +1,8 @@
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values (NULL, 'First post', '2025-10-01 10:10:55.664727', NULL, 2, NULL, 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values (NULL, 'First post', '2025-10-01 10:10:59.770625', NULL, 3, NULL, 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values (NULL, 'First post', '2025-10-01 10:11:00.703271', NULL, 4, NULL, 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values ('posts_1759288369550432600.png', 'First post', '2025-10-01 10:12:49.56314', NULL, 5, NULL, 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values ('posts_1759288437358195200.png', 'First post', '2025-10-01 10:13:57.37471', NULL, 6, NULL, 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values ('posts_1759288557576736100.png', 'First post', '2025-10-01 10:15:57.59448', NULL, 7, NULL, 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values ('posts_1759288241386298900.png', 'Update First Post', '2025-10-01 10:10:41.398175', NULL, 1, '2025-10-01 10:38:19.494263', 1);
+insert into "posts" ("content_image", "content_text", "created_at", "deleted_at", "id", "updated_at", "user_id") values ('posts_1759288567073866600.png', 'First post', '2025-10-01 10:16:07.077345', '2025-10-01 10:43:38.900834', 8, NULL, 1);
