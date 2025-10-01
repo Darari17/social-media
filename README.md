@@ -34,7 +34,7 @@ DBNAME=<your_database_name
 DBHOST=<your_database_host>
 DBPORT=<your_database_port>
 
-# JWT hash
+# JWT
 JWT_SECRET=<your_secret_jwt>
 JWT_ISSUER=<your_jwt_issuer>
 
@@ -121,4 +121,4 @@ Copyright (c) 2025 Farid Rhamadhan Darari
 
 ## 📧 Contact Info
 
-[https://github.com/Darari17](https://github.com/Darari17)
+[faridramadhan59@gmail.com](mailto:faridramadhan59@gmail.com)
