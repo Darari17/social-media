@@ -18,7 +18,17 @@ func NewFollowHandler(repo *repos.FollowRepo) *FollowHandler {
 	return &FollowHandler{followRepo: repo}
 }
 
-// POST /follow/:id
+// FollowUser godoc
+// @Summary Follow user
+// @Description Follow another user by ID
+// @Tags Follow
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID to follow"
+// @Success 200 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Router /follow/{id} [post]
 func (fh *FollowHandler) FollowUser(c *gin.Context) {
 	followerId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -68,7 +78,17 @@ func (fh *FollowHandler) FollowUser(c *gin.Context) {
 	})
 }
 
-// DELETE /follow/:id
+// UnfollowUser godoc
+// @Summary Unfollow user
+// @Description Unfollow another user by ID
+// @Tags Follow
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID to unfollow"
+// @Success 200 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Router /follow/{id} [delete]
 func (fh *FollowHandler) UnfollowUser(c *gin.Context) {
 	followerId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -116,7 +136,15 @@ func (fh *FollowHandler) UnfollowUser(c *gin.Context) {
 	})
 }
 
-// GET /users/:id/followers
+// GetFollowers godoc
+// @Summary Get followers
+// @Description Get list of followers for a user
+// @Tags Follow
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} dtos.Response{data=[]models.User}
+// @Failure 400 {object} dtos.Response
+// @Router /users/{id}/followers [get]
 func (fh *FollowHandler) GetFollowers(c *gin.Context) {
 	userIdStr := c.Param("id")
 	userId, err := strconv.Atoi(userIdStr)
@@ -147,7 +175,15 @@ func (fh *FollowHandler) GetFollowers(c *gin.Context) {
 	})
 }
 
-// GET /users/:id/following
+// GetFollowing godoc
+// @Summary Get following
+// @Description Get list of users that a user is following
+// @Tags Follow
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} dtos.Response{data=[]models.User}
+// @Failure 400 {object} dtos.Response
+// @Router /users/{id}/following [get]
 func (fh *FollowHandler) GetFollowing(c *gin.Context) {
 	userIdStr := c.Param("id")
 	userId, err := strconv.Atoi(userIdStr)

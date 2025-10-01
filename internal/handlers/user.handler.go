@@ -21,6 +21,15 @@ func NewUserHandler(ur *repos.UserRepo) *UserHandler {
 	}
 }
 
+// GetAllUsers godoc
+// @Summary Get all users
+// @Description Get list of all registered users
+// @Tags Users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response{data=[]models.User}
+// @Failure 500 {object} dtos.Response
+// @Router /users [get]
 func (uh *UserHandler) GetAllUsers(c *gin.Context) {
 	users, err := uh.userRepo.GetAllUsers(c.Request.Context())
 	if err != nil {
@@ -41,6 +50,15 @@ func (uh *UserHandler) GetAllUsers(c *gin.Context) {
 	})
 }
 
+// GetUserByID godoc
+// @Summary Get profile
+// @Description Get authenticated user's profile
+// @Tags Users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response{data=dtos.UserResponse}
+// @Failure 401 {object} dtos.Response
+// @Router /users/profile [get]
 func (uh *UserHandler) GetUserByID(c *gin.Context) {
 	userId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -82,6 +100,20 @@ func (uh *UserHandler) GetUserByID(c *gin.Context) {
 	})
 }
 
+// UpdateUser godoc
+// @Summary Update profile
+// @Description Update authenticated user's profile (name, avatar, bio)
+// @Tags Users
+// @Accept multipart/form-data
+// @Produce json
+// @Param name formData string false "Name"
+// @Param avatar formData file false "Avatar image"
+// @Param bio formData string false "Bio"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Router /users/profile [patch]
 func (uh *UserHandler) UpdateUser(c *gin.Context) {
 	userId, err := utils.GetUserFromCtx(c)
 	if err != nil {

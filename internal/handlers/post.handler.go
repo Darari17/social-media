@@ -20,6 +20,19 @@ func NewPostHandler(postRepo *repos.PostRepo) *PostHandler {
 	return &PostHandler{postRepo: postRepo}
 }
 
+// CreatePost godoc
+// @Summary Create post
+// @Description Create a new post
+// @Tags Posts
+// @Accept multipart/form-data
+// @Produce json
+// @Param content formData string false "Post content"
+// @Param image formData file false "Post image"
+// @Security BearerAuth
+// @Success 201 {object} dtos.Response{data=dtos.PostResponse}
+// @Failure 400 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Router /posts [post]
 func (ph *PostHandler) CreatePost(c *gin.Context) {
 	userId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -90,6 +103,13 @@ func (ph *PostHandler) CreatePost(c *gin.Context) {
 	})
 }
 
+// GetAllPosts godoc
+// @Summary Get all posts
+// @Description Get list of all posts
+// @Tags Posts
+// @Produce json
+// @Success 200 {object} dtos.Response{data=[]dtos.PostResponse}
+// @Router /posts [get]
 func (ph *PostHandler) GetAllPosts(c *gin.Context) {
 	posts, err := ph.postRepo.GetAllPosts(c.Request.Context())
 	if err != nil {
@@ -110,6 +130,15 @@ func (ph *PostHandler) GetAllPosts(c *gin.Context) {
 	})
 }
 
+// GetPostByID godoc
+// @Summary Get post by ID
+// @Description Get a single post by its ID
+// @Tags Posts
+// @Produce json
+// @Param postId path int true "Post ID"
+// @Success 200 {object} dtos.Response{data=dtos.PostResponse}
+// @Failure 404 {object} dtos.Response
+// @Router /posts/{postId} [get]
 func (ph *PostHandler) GetPostByID(c *gin.Context) {
 	postIdStr := c.Param("id")
 	postId, err := strconv.Atoi(postIdStr)
@@ -147,6 +176,20 @@ func (ph *PostHandler) GetPostByID(c *gin.Context) {
 	})
 }
 
+// UpdatePost godoc
+// @Summary Update post
+// @Description Update a post by ID
+// @Tags Posts
+// @Accept multipart/form-data
+// @Produce json
+// @Param postId path int true "Post ID"
+// @Param content formData string false "Post content"
+// @Param image formData file false "Post image"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response{data=dtos.PostResponse}
+// @Failure 400 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Router /posts/{postId} [patch]
 func (ph *PostHandler) UpdatePost(c *gin.Context) {
 	postIdStr := c.Param("id")
 	postId, err := strconv.Atoi(postIdStr)
@@ -249,6 +292,16 @@ func (ph *PostHandler) UpdatePost(c *gin.Context) {
 	})
 }
 
+// DeletePost godoc
+// @Summary Delete post
+// @Description Delete a post by ID
+// @Tags Posts
+// @Produce json
+// @Param postId path int true "Post ID"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Router /posts/{postId} [delete]
 func (ph *PostHandler) DeletePost(c *gin.Context) {
 	postIdStr := c.Param("id")
 	postId, err := strconv.Atoi(postIdStr)

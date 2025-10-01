@@ -7,7 +7,6 @@ import (
 	"github.com/Darari17/social-media/internal/dtos"
 	"github.com/Darari17/social-media/internal/models"
 	"github.com/Darari17/social-media/internal/repos"
-	"github.com/Darari17/social-media/internal/utils"
 	"github.com/Darari17/social-media/pkg"
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +21,17 @@ func NewAuthHandler(authRepo *repos.AuthRepo) *AuthHandler {
 	}
 }
 
+// Register godoc
+// @Summary Register user
+// @Description Register with email and password
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body dtos.UserRequest true "Register request"
+// @Success 201 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Failure 409 {object} dtos.Response
+// @Router /auth/register [post]
 func (ah *AuthHandler) Register(c *gin.Context) {
 	var body dtos.UserRequest
 	if err := c.ShouldBind(&body); err != nil {
@@ -67,6 +77,17 @@ func (ah *AuthHandler) Register(c *gin.Context) {
 	})
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Login with email and password
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body dtos.UserRequest true "Login request"
+// @Success 200 {object} dtos.Response{data=dtos.UserTokenResponse}
+// @Failure 400 {object} dtos.Response
+// @Failure 500 {object} dtos.Response
+// @Router /auth/login [post]
 func (ah *AuthHandler) Login(c *gin.Context) {
 	var body dtos.UserRequest
 	if err := c.ShouldBind(&body); err != nil {
@@ -132,6 +153,16 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	})
 }
 
+// Logout godoc
+// @Summary Logout user
+// @Description Logout by invalidating JWT
+// @Tags Auth
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response
+// @Failure 401 {object} dtos.Response
+// @Failure 500 {object} dtos.Response
+// @Router /auth/logout [get]
 func (ah *AuthHandler) Logout(c *gin.Context) {
 	bearerToken := c.GetHeader("Authorization")
 	if err := ah.authRepo.Logout(c.Request.Context(), bearerToken); err != nil {
@@ -148,131 +179,5 @@ func (ah *AuthHandler) Logout(c *gin.Context) {
 		Code:    http.StatusOK,
 		Success: true,
 		Message: "Logout Succesfully",
-	})
-}
-
-func (ah *AuthHandler) GetAllUsers(c *gin.Context) {
-	users, err := ah.authRepo.GetAllUsers(c.Request.Context())
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, dtos.Response{
-			Code:    http.StatusInternalServerError,
-			Success: false,
-			Message: "Failed to fetch all users",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, dtos.Response{
-		Code:    http.StatusOK,
-		Success: true,
-		Message: "Get all users successfully",
-		Data:    users,
-	})
-}
-
-func (ah *AuthHandler) GetUserByID(c *gin.Context) {
-	userId, err := utils.GetUserFromCtx(c)
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusUnauthorized, dtos.Response{
-			Code:    http.StatusUnauthorized,
-			Success: false,
-			Message: "Unauthorized: " + err.Error(),
-		})
-		return
-	}
-
-	user, err := ah.authRepo.GetUserByID(c.Request.Context(), userId)
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusNotFound, dtos.Response{
-			Code:    http.StatusNotFound,
-			Success: false,
-			Message: "User not found",
-		})
-		return
-	}
-
-	response := dtos.UserResponse{
-		ID:        userId,
-		Name:      user.Name,
-		Email:     &user.Email,
-		Avatar:    user.Avatar,
-		Bio:       user.Bio,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}
-
-	c.JSON(http.StatusOK, dtos.Response{
-		Code:    http.StatusOK,
-		Success: true,
-		Message: "Get profile successfully",
-		Data:    response,
-	})
-}
-
-func (ah *AuthHandler) UpdateUser(c *gin.Context) {
-	userId, err := utils.GetUserFromCtx(c)
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusUnauthorized, dtos.Response{
-			Code:    http.StatusUnauthorized,
-			Success: false,
-			Message: "Unauthorized: " + err.Error(),
-		})
-		return
-	}
-
-	var body dtos.UserUpdateRequest
-	if err := c.ShouldBind(&body); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, dtos.Response{
-			Code:    http.StatusBadRequest,
-			Success: false,
-			Message: "Invalid body request",
-		})
-		return
-	}
-
-	var avatarPath *string
-	file, err := c.FormFile("avatar")
-	if err == nil {
-		if filename, err := utils.FileUpload(c, file, "avatar"); err != nil {
-			c.JSON(http.StatusBadRequest, dtos.Response{
-				Code:    http.StatusBadRequest,
-				Success: false,
-				Message: err.Error(),
-			})
-			return
-		} else {
-			avatarPath = &filename
-		}
-	}
-
-	updatedUser := models.User{
-		ID:     userId,
-		Name:   body.Name,
-		Avatar: avatarPath,
-		Bio:    body.Bio,
-	}
-
-	if err := ah.authRepo.UpdateUser(
-		c.Request.Context(),
-		&updatedUser,
-	); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, dtos.Response{
-			Code:    http.StatusInternalServerError,
-			Success: false,
-			Message: "Failed to update profile",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, dtos.Response{
-		Code:    http.StatusOK,
-		Success: true,
-		Message: "Profile updated successfully",
 	})
 }

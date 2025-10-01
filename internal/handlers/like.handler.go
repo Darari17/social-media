@@ -23,7 +23,16 @@ func NewLikeHandler(r *repos.LikeRepo, p *repos.PostRepo) *LikeHandler {
 	}
 }
 
-// POST /posts/:id/like
+// LikePost godoc
+// @Summary Like post
+// @Description Like a post by ID
+// @Tags Likes
+// @Produce json
+// @Param id path int true "Post ID"
+// @Security BearerAuth
+// @Success 201 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Router /posts/{id}/like [post]
 func (h *LikeHandler) LikePost(c *gin.Context) {
 	userId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -67,7 +76,16 @@ func (h *LikeHandler) LikePost(c *gin.Context) {
 	})
 }
 
-// DELETE /posts/:id/like
+// UnlikePost godoc
+// @Summary Unlike post
+// @Description Unlike a post by ID
+// @Tags Likes
+// @Produce json
+// @Param id path int true "Post ID"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Router /posts/{id}/unlike [post]
 func (h *LikeHandler) UnlikePost(c *gin.Context) {
 	userId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -106,7 +124,16 @@ func (h *LikeHandler) UnlikePost(c *gin.Context) {
 	})
 }
 
-// GET /posts/:id/likes
+// GetLikes godoc
+// @Summary Get likes
+// @Description Get list of users who liked a post
+// @Tags Likes
+// @Produce json
+// @Param id path int true "Post ID"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response{data=[]models.User}
+// @Failure 400 {object} dtos.Response
+// @Router /posts/{id}/likes [get]
 func (h *LikeHandler) GetLikes(c *gin.Context) {
 	postIdStr := c.Param("id")
 	postId, err := strconv.Atoi(postIdStr)

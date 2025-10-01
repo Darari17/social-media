@@ -20,6 +20,18 @@ func NewCommentHandler(r *repos.CommentRepo, p *repos.PostRepo) *CommentHandler 
 	return &CommentHandler{repo: r, postRepo: p}
 }
 
+// CreateComment godoc
+// @Summary Post comment
+// @Description Create a new comment on a post
+// @Tags Comments
+// @Accept json
+// @Produce json
+// @Param id path int true "Post ID"
+// @Param request body dtos.CommentRequest true "Comment body"
+// @Security BearerAuth
+// @Success 201 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Router /posts/{id}/comments [post]
 func (h *CommentHandler) CreateComment(c *gin.Context) {
 	userId, err := utils.GetUserFromCtx(c)
 	if err != nil {
@@ -73,6 +85,16 @@ func (h *CommentHandler) CreateComment(c *gin.Context) {
 	})
 }
 
+// GetComments godoc
+// @Summary Get comments by post ID
+// @Description Get all comments for a post
+// @Tags Comments
+// @Produce json
+// @Param id path int true "Post ID"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response{data=[]models.Comment}
+// @Failure 400 {object} dtos.Response
+// @Router /posts/{id}/comments [get]
 func (h *CommentHandler) GetComments(c *gin.Context) {
 	postId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -102,6 +124,18 @@ func (h *CommentHandler) GetComments(c *gin.Context) {
 	})
 }
 
+// UpdateComment godoc
+// @Summary Update comment
+// @Description Update a comment by ID
+// @Tags Comments
+// @Accept json
+// @Produce json
+// @Param id path int true "Comment ID"
+// @Param request body dtos.CommentUpdateRequest true "Comment update body"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Router /posts/comments/{id} [put]
 func (h *CommentHandler) UpdateComment(c *gin.Context) {
 	commentId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -139,6 +173,16 @@ func (h *CommentHandler) UpdateComment(c *gin.Context) {
 	})
 }
 
+// DeleteComment godoc
+// @Summary Delete comment
+// @Description Delete a comment by ID
+// @Tags Comments
+// @Produce json
+// @Param id path int true "Comment ID"
+// @Security BearerAuth
+// @Success 200 {object} dtos.Response
+// @Failure 400 {object} dtos.Response
+// @Router /posts/comments/{id} [delete]
 func (h *CommentHandler) DeleteComment(c *gin.Context) {
 	commentId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
