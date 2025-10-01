@@ -19,7 +19,6 @@ func NewUserRepo(db *pgxpool.Pool) *UserRepo {
 	}
 }
 
-// buat ambil data semua user
 func (ur *UserRepo) GetAllUsers(c context.Context) ([]dtos.UserResponse, error) {
 	query := "select id, name, email, avatar, bio, created_at, updated_at from users"
 
@@ -42,7 +41,6 @@ func (ur *UserRepo) GetAllUsers(c context.Context) ([]dtos.UserResponse, error) 
 	return users, nil
 }
 
-// detail user
 func (ur *UserRepo) GetUserByID(c context.Context, userId int) (*models.User, error) {
 	query := "select id, name, email, avatar, bio, created_at, updated_at from users where id = $1"
 
@@ -55,7 +53,6 @@ func (ur *UserRepo) GetUserByID(c context.Context, userId int) (*models.User, er
 	return &user, nil
 }
 
-// buat updated
 func (ur *UserRepo) UpdateUser(c context.Context, user *models.User) error {
 	query := "UPDATE users SET "
 	args := []interface{}{}

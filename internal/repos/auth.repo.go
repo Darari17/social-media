@@ -51,7 +51,6 @@ func (ar *AuthRepo) Logout(c context.Context, token string) error {
 	return nil
 }
 
-// buat ambil data semua user
 func (ar *AuthRepo) GetAllUsers(c context.Context) ([]dtos.UserResponse, error) {
 	query := "select id, name, email, avatar, bio, created_at, updated_at from users"
 
@@ -74,7 +73,6 @@ func (ar *AuthRepo) GetAllUsers(c context.Context) ([]dtos.UserResponse, error) 
 	return users, nil
 }
 
-// detail user
 func (ar *AuthRepo) GetUserByID(c context.Context, userId int) (*models.User, error) {
 	query := "select id, name, email, avatar, bio, created_at, updated_at from users where id = $1"
 
@@ -87,7 +85,6 @@ func (ar *AuthRepo) GetUserByID(c context.Context, userId int) (*models.User, er
 	return &user, nil
 }
 
-// buat updated
 func (ar *AuthRepo) UpdateUser(c context.Context, user *models.User) error {
 	query := "UPDATE users SET "
 	args := []interface{}{}
