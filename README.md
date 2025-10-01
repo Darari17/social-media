@@ -41,8 +41,6 @@ JWT_ISSUER=<your_jwt_issuer>
 # Redis
 RDB_HOST=<your_redis_host>
 RDB_PORT=<your_redis_port>
-RDB_USER=<your_redis_user>
-RDB_PWD=<your_redis_password>
 ```
 
 ## ⚙️ Installation
