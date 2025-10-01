@@ -8,6 +8,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// @title 											Social Media
+// @version 										1.0
+// @securityDefinitions.apikey 	BearerAuth
+// @in 													header
+// @name 												Authorization
+// @description									RESTful API created using gin for Backend Social media
+// @host												localhost:8080
+// @basePath										/
 func main() {
 	// load env
 	if err := godotenv.Load(); err != nil {
