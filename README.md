@@ -6,6 +6,14 @@
 
 This project is a backend submission task developed as part of the Koda Tech Academy Bootcamp. It implements a simple Social Media API using Golang, designed to demonstrate backend development skills and best practices.
 
+## System Design
+
+![System Design](system-design.png)
+
+## ERD
+
+![ERD](erd-social-media.png)
+
 ## 🔧 Tech Stack
 
 - [Go](https://go.dev/dl/)
